@@ -1,7 +1,33 @@
 class UsersController < ApplicationController
   def authenticate
+    #get the username from params
+    #get teh password from params
+    un = params.fetch("input_username")
+    pw = params.fetch("input_password")
 
-    render({ :template => "users/signin_form.html.erb"})
+
+    #look up hte record from teh db matching username 
+    #if there's no record redirect back to sign in form
+    user = User.where({ :username => un}).at(0)
+    
+    if user == nil
+      redirect_to("/user_sign_in", { :alert => "No one by that name"})
+    else     #if there is a record, check if password matches
+      if user.authenticate(pw)     #if so, set the cookie
+          session.store(:user_id, user.id)
+
+          redirect_to("/", { :notice => "Welcome back, " + user.username})
+      else     #if not, redirect back to sign in form
+        redirect_to("/user_sign_in", { :alert => "wrong password"})
+    end
+
+  end
+    
+    
+
+
+
+
   end
 
   
@@ -48,7 +74,6 @@ class UsersController < ApplicationController
 
     if save_status == true
       session.store(:user_id, user.id)
-
       redirect_to("/users/#{user.username}", { :notice => "Welcome, " + user.username + "!"})
     else
       redirect_to("/user_sign_up", { :alert => user.errors.full_messages.to_sentence })
