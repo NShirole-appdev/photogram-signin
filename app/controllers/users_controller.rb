@@ -4,6 +4,19 @@ class UsersController < ApplicationController
 
     render({ :template => "users/signup_form.html.erb"})
   end
+
+  def new_session_form
+
+
+    render({ :template => "users/signin_form.html.erb"})
+  end
+  
+  def user_sign_out
+    
+    reset_session
+
+    redirect_to("/", { :notice => "See you later!"})
+  end
   
   def index
     @users = User.all.order({ :username => :asc })
@@ -28,9 +41,11 @@ class UsersController < ApplicationController
     save_status = user.save
 
     if save_status == true
-      redirect_to("/users/#{user.username}", { :notice => "Welcome," + user.username + "!"})
+      session.store(:user_id, user.id)
+
+      redirect_to("/users/#{user.username}", { :notice => "Welcome, " + user.username + "!"})
     else
-      redirect_to("/user_sign_up")
+      redirect_to("/user_sign_up", { :alert => user.errors.full_messages.to_sentence })
     end
   end
 
