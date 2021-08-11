@@ -1,4 +1,10 @@
 class UsersController < ApplicationController
+  def authenticate
+
+    render({ :template => "users/signin_form.html.erb"})
+  end
+
+  
   def new_registration_form
 
 
@@ -12,7 +18,7 @@ class UsersController < ApplicationController
   end
   
   def user_sign_out
-    
+
     reset_session
 
     redirect_to("/", { :notice => "See you later!"})
